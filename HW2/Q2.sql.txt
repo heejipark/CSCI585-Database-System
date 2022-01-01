@@ -1,0 +1,20 @@
+-- Hee Ji Park
+-- Oracle DB (https://livesql.oracle.com/)
+-- Two methods
+
+-- Q2. Write a query to output the most-self reported symptom
+--Q2-1.Oracle only
+SELECT symptom_num, COUNT(symptom_num) as count_symptom_num
+FROM symptom 
+GROUP BY symptom_num
+ORDER BY count_symptom_num DESC
+FETCH FIRST 1 ROWS ONLY; 
+
+--Q2-2. General query
+SELECT symptom_num, COUNT(symptom_num) as count_symptom_num
+FROM symptom 
+GROUP BY symptom_num
+HAVING COUNT(symptom_num) = (SELECT MAX(cnt) FROM 
+                                (SELECT COUNT(symptom_num) AS cnt     
+                                 FROM symptom 
+                                 GROUP BY symptom_num));

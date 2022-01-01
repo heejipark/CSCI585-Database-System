@@ -1,0 +1,28 @@
+-- Hee Ji Park
+-- Oracle DB (https://livesql.oracle.com/)
+-- Q5. Create your own query (2 queries)
+
+-- Q5-1. Extract the IDs of employees who have not returned to the company even after 14 days of self-quarantine.
+
+SELECT distinct C.EID, count(H.status) self_quarantine_duration
+FROM Case C, HEALTH_STATUS H
+WHERE C.EID = H.EID AND C.resolution='left'
+Group by C.EID
+Having count(H.status)>=14;
+
+
+-- Q5-2. Using 'Table division' : Extract the IDs of employees who have both positive and negative results in the COVID test.
+-- Table 'T1':(SELECT EID, test_result FROM test) 
+-- Table 'ts':(SELECT distinct(test_result) FROM test)
+-- As a result, I try to calculate 'T1%ts'.
+
+SELECT DISTINCT EID
+  FROM (SELECT EID, test_result FROM test) T1
+  WHERE NOT EXISTS
+       (SELECT *
+          FROM (SELECT distinct(test_result) FROM test) ts
+         WHERE NOT EXISTS
+               (SELECT *
+                  FROM (SELECT EID, test_result FROM test) T2
+                 WHERE (T1.EID = T2.EID)
+                   AND (T2.test_result = ts.test_result)));

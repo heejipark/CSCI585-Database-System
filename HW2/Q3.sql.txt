@@ -1,0 +1,25 @@
+-- Hee Ji Park
+-- Oracle DB (https://livesql.oracle.com/)
+-- two methods
+-- I define 'sickest floor' as the floor with the highest number of positive patients so far.
+
+
+-- Q3. Write a query to output the 'sickest' floor
+--Q3-1.Oracle only
+SELECT floor, count(floor) as count_floor
+FROM (SELECT e.EID, e.floor
+      FROM Test t, Employee e
+      WHERE test_result = 'positive' and t.EID = e.EID)
+GROUP BY floor
+ORDER BY count_floor DESC
+FETCH FIRST 1 ROWS ONLY;
+
+--Q3-2. General query
+SELECT e.floor, COUNT(e.floor) as count_floor
+FROM Test t, Employee e
+WHERE test_result = 'positive' and t.EID = e.EID
+GROUP BY e.floor
+HAVING COUNT(e.floor) = (SELECT max(cnt_floor) From (SELECT count(e.floor) as cnt_floor
+                                                        FROM Test t, Employee e
+                                                        WHERE test_result = 'positive' and t.EID = e.EID
+                                                        GROUP BY e.floor));

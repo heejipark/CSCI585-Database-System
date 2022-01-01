@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.0">
+<Document>
+<Style id="z1">
+<IconStyle><Icon><href>http://www.google.com/intl/en_us/mapfiles/ms/micons/blue-dot.png</href></Icon></IconStyle>
+</Style>
+<Placemark><name>Troy Hall</name>
+<styleUrl>#z1</styleUrl><Point><coordinates>-118.2818054,34.0260208</coordinates></Point>
+</Placemark>
+<Placemark><name>USC Bookstores</name>
+<styleUrl>#z1</styleUrl><Point><coordinates>-118.286183,34.0207388</coordinates></Point>
+</Placemark>
+<Placemark><name>Viterbi school</name>
+<styleUrl>#z1</styleUrl><Point><coordinates>-118.2880679,34.0200566</coordinates></Point>
+</Placemark>
+<Placemark><name>Jefferson Str.</name>
+<styleUrl>#z1</styleUrl><Point><coordinates>-118.2887621,34.0248966</coordinates></Point>
+</Placemark>
+<Placemark><name>Leavey Library</name>
+<styleUrl>#z1</styleUrl><Point><coordinates>-118.282985,34.021633</coordinates></Point>
+</Placemark>
+<Placemark><name>USC Hotel</name>
+<styleUrl>#z1</styleUrl><Point><coordinates>-118.281233, 34.019296</coordinates></Point>
+</Placemark>
+<Placemark><name>Marshall School</name>
+<styleUrl>#z1</styleUrl><Point><coordinates>-118.285406,34.018841</coordinates></Point>
+</Placemark>
+<Placemark><name>Cinematic Arts</name>
+<styleUrl>#z1</styleUrl><Point><coordinates>-118.286415,34.023465</coordinates></Point>
+</Placemark>
+<Placemark><name>Target</name>
+<styleUrl>#z1</styleUrl><Point><coordinates>-118.2842542,34.0256988</coordinates></Point>
+</Placemark>
+<Placemark><name>Ray R Hall</name>
+<styleUrl>#z1</styleUrl><Point><coordinates>-118.2897672,34.0222983</coordinates></Point>
+</Placemark>
+<Placemark><name>Doheny Library</name>
+<styleUrl>#z1</styleUrl><Point><coordinates>-118.2841286,34.0203388</coordinates></Point>
+</Placemark>
+<Placemark><name>Chase Bank</name>
+<styleUrl>#z1</styleUrl><Point><coordinates>-118.2803439,34.0222549</coordinates></Point>
+</Placemark>
+<Placemark><name>Korean Studies</name>
+<styleUrl>#z1</styleUrl><Point><coordinates>-118.2843231,34.0228976</coordinates></Point>
+</Placemark>
+
+
+<Placemark>
+<name>ConvexHullall</name>
+<Style><LineStyle><color>ffff7d53</color></LineStyle><PolyStyle><color>80fe4d28</color></PolyStyle></Style>
+<Polygon>
+<outerBoundaryIs>
+<LinearRing>
+<coordinates>-118.285406,34.018841 -118.2880679,34.0200566 -118.2897672,34.0222983 -118.2887621,34.0248966 -118.2842542,34.0256988 -118.2818054,34.0260208 -118.2803439,34.0222549 -118.281233,34.019296 -118.285406,34.018841</coordinates>
+</LinearRing>
+</outerBoundaryIs>
+</Polygon> 
+</Placemark>
+<Placemark>
+<name>Neighbour1</name>
+<description>Neighbour1</description>
+<Style><LineStyle><color>ff0000ff</color><width>2</width></LineStyle></Style>
+<LineString>
+<coordinates>-118.2818054,34.0260208 -118.2842542,34.0256988</coordinates>
+</LineString>
+</Placemark>
+<Placemark>
+<name>Neighbour2</name>
+<description>Neighbour2</description>
+<Style><LineStyle><color>ff0000ff</color><width>2</width></LineStyle></Style>
+<LineString>
+<coordinates>-118.2818054,34.0260208 -118.2843231,34.0228976</coordinates>
+</LineString>
+</Placemark>
+
+<Placemark>
+<name>Neighbour3</name>
+<description>Neighbour3</description>
+<Style><LineStyle><color>ff0000ff</color><width>2</width></LineStyle></Style>
+<LineString>
+<coordinates>-118.2818054,34.0260208 -118.2803439,34.0222549</coordinates>
+</LineString>
+</Placemark>
+
+<Placemark>
+<name>Neighbour4</name>
+<description>Neighbour4</description>
+<Style><LineStyle><color>ff0000ff</color><width>2</width></LineStyle></Style>
+<LineString>
+<coordinates>-118.2818054,34.0260208 -118.282985,34.021633</coordinates>
+</LineString>
+</Placemark>
+</Document></kml>

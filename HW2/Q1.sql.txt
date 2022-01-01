@@ -1,0 +1,372 @@
+-- Hee Ji Park
+-- Oracle DB (https://livesql.oracle.com/)
+
+-- Q1. Write SQL commands to create the tables
+-- 1-1. Create tables
+CREATE TABLE Employee (
+    eID varchar2(20) NOT NULL,
+    ename varchar2(30) NOT NULL,
+    office int NOT NULL,
+    floor int NOT NULL,
+    phone varchar2(20) NOT NULL,
+    email varchar2(50),
+    PRIMARY KEY (eID),
+    CONSTRAINT CHK_employee CHECK (floor>=1 AND floor<=10)
+);
+
+CREATE TABLE Meeting (
+    meeting_ID int NOT NULL,
+    eID varchar2(20) NOT NULL,
+    room int NOT NULL,
+    floor int NOT NULL,
+    meeting_date date NOT NULL,
+    start_time int NOT NULL,
+    PRIMARY KEY (meeting_ID),
+    FOREIGN KEY (eID) REFERENCES Employee(eID),
+    CONSTRAINT CHK_meeting CHECK (floor>=1 AND floor<=10 AND start_time>=8 AND start_time<18)
+);
+
+CREATE TABLE Notification (
+    notification_ID int NOT NULL,
+    eID varchar2(20) NOT NULL,
+    notification_date date NOT NULL,
+    notification_type varchar2(20) DEFAULT 'optional' NOT NULL,
+    PRIMARY KEY (notification_ID),
+    FOREIGN KEY (eID) REFERENCES Employee(eID),
+    CONSTRAINT CHK_notification CHECK (notification_type='optional' or notification_type='mandatory')
+);
+
+CREATE TABLE Symptom (
+    symptom_ID int NOT NULL,
+    eID varchar2(20) NOT NULL,
+    date_reported date NOT NULL,
+    symptom_num int NOT NULL,
+    PRIMARY KEY (symptom_Id),
+    FOREIGN KEY (eID) REFERENCES Employee(eID),
+    CONSTRAINT CHK_symptom CHECK (symptom_num>=1 and symptom_num<=5)
+);
+
+CREATE TABLE Scan (
+    scan_ID int NOT NULL,
+    scan_date date NOT NULL,
+    scan_time int NOT NULL,
+    eID varchar2(20) NOT NULL,
+    temperature number(3,1) NOT NULL,
+    PRIMARY KEY (scan_ID),
+    FOREIGN KEY (eID) REFERENCES Employee(eID),
+    CONSTRAINT CHK_scan CHECK (scan_time>=0 and scan_time<=23)
+);
+
+CREATE TABLE Test (
+    test_ID int NOT NULL,
+    location varchar2(50),
+    test_date date NOT NULL,
+    test_time int NOT NULL,
+    eID varchar2(20) NOT NULL,
+    test_result varchar2(50) NOT NULL,
+    PRIMARY KEY (test_ID),
+    FOREIGN KEY (eID) REFERENCES Employee(eID),
+    CONSTRAINT CHK_test1 CHECK (test_time>=0 and test_time<=23),
+    CONSTRAINT CHK_test2 CHECK (test_result='negative' or test_result='positive')
+
+);
+
+CREATE TABLE Case (
+    case_ID int NOT NULL,
+    eID varchar2(20) NOT NULL,
+    case_date date NOT NULL,
+    resolution varchar2(50) DEFAULT 'left' NOT NULL,
+    PRIMARY KEY (case_ID),
+    FOREIGN KEY (eID) REFERENCES Employee(eID),
+    CONSTRAINT CHK_case CHECK (resolution='back' or resolution='left' or resolution='deceased')
+);
+
+CREATE TABLE Health_status (
+    hs_ID int NOT NULL,
+    eID varchar2(20) NOT NULL,
+    hs_date date NOT NULL,
+    status varchar2(50) DEFAULT 'sick' NOT NULL,
+    PRIMARY KEY (hs_ID),
+    FOREIGN KEY (eID) REFERENCES Employee(eID),
+    CONSTRAINT CHK_hs CHECK (status='sick' or status='hospitalized' or status='well')
+);
+
+-- 1-2. create sequence
+CREATE SEQUENCE meeting_seq START WITH 1 INCREMENT BY 1 MAXVALUE 10000 CYCLE NOCACHE;
+CREATE SEQUENCE notification_seq START WITH 1 INCREMENT BY 1 MAXVALUE 10000 CYCLE NOCACHE;
+CREATE SEQUENCE scan_seq START WITH 1 INCREMENT BY 1 MAXVALUE 10000 CYCLE NOCACHE;
+CREATE SEQUENCE symptom_seq START WITH 1 INCREMENT BY 1 MAXVALUE 10000 CYCLE NOCACHE;
+CREATE SEQUENCE test_seq START WITH 1 INCREMENT BY 1 MAXVALUE 10000 CYCLE NOCACHE;
+CREATE SEQUENCE case_seq START WITH 1 INCREMENT BY 1 MAXVALUE 10000 CYCLE NOCACHE;
+CREATE SEQUENCE hs_seq START WITH 1 INCREMENT BY 1 MAXVALUE 10000 CYCLE NOCACHE;
+
+-- 1-3. Insert data into Employee table
+INSERT INTO Employee values('Bestbuy000001','James',101,1,213-111-1111,'james@bestbuy.com');
+INSERT INTO Employee values('Bestbuy000002','Aloha',101,1,213-222-2222,'aloha@bestbuy.com');
+INSERT INTO Employee values('Bestbuy000003','Harry',101,1,213-333-3333,'harry@bestbuy.com');
+INSERT INTO Employee values('Amazon000001','Jay',201,2,213-777-7777,'jay@amazon.com');
+INSERT INTO Employee values('Amazon000002','Mike',201,2,213-888-8888,NULL);
+INSERT INTO Employee values('Amazon000003','Minsu',201,2,213-999-9999,'minsu@amazon.com');
+INSERT INTO Employee values('Netflix000001','Heeji',301,3,213-456-7890,NULL);
+INSERT INTO Employee values('Netflix000002','Hermione',301,3,213-123-1234,NULL);
+INSERT INTO Employee values('Netflix000003','Ginny',301,3,213-000-0123,NULL);
+INSERT INTO Employee values('Google000001','Jone',401,4,213-444-4444,'jone@google.com');
+INSERT INTO Employee values('Google000002','Jessi',401,4,213-555-5555,'jessi@google.com');
+INSERT INTO Employee values('Google000003','Erin',401,4,213-666-6666,'erin@google.com');
+INSERT INTO Employee values('Addidas000001','Jessica',501,5,213-000-0000,'jessica@addidas.com');
+INSERT INTO Employee values('Addidas000002','youmin',501,5,213-123-4567,'youmin@addidas.com');
+INSERT INTO Employee values('Addidas000003','Tiffany',501,5,213-987-6543,NULL);
+
+-- 2-1. Scan -> Positive (Scan-> Test-> Case ->HS)
+INSERT INTO Scan values(scan_seq.NEXTVAL, Date '2021-09-01', 8, 'Bestbuy000001',38);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-01',9, 'Bestbuy000001','positive');
+INSERT INTO Case values(case_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-02', 'back');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-02', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-03', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-04', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-05', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-06', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-07', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-08', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-09', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-10', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-11', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-12', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-13', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-14', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-15', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-16', 'well');
+
+-- 2-2. Send notifications to employees working on the same floor as 'Bestbuy000001'. (optional TEST)
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Bestbuy000002', Date '2021-09-01', 'optional');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Bestbuy000003', Date '2021-09-01', 'optional');
+
+-- 2-3. Covid test results of employees who came in contact with 'Bestbuy000001'
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-03',9, 'Bestbuy000002','negative');
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-03',9, 'Bestbuy000003','negative');
+
+-- 2-4. Scan -> Negative
+INSERT INTO Scan values(scan_seq.NEXTVAL, Date '2021-09-01', 9, 'Netflix000001',38.1);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-01',10, 'Netflix000001','negative');
+INSERT INTO Scan values(scan_seq.NEXTVAL, Date '2021-09-01', 9, 'Netflix000002',36.3);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-01',10, 'Netflix000002','negative');
+
+-- 3-1. Insert Meeting data
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Bestbuy000002',510,5, Date '2021-09-01', 10);
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Addidas000001',1510,5, Date '2021-09-01', 10);
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Bestbuy000003',210,2, Date '2021-09-01', 11);
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Google000002',210,2, Date '2021-09-01', 11);
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Google000003',210,2, Date '2021-09-01', 11);
+
+-- 3-2. Meeting on the 1st floor on September 1st
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Addidas000002',110,1, Date '2021-09-01', 11);
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Addidas000003',110,1, Date '2021-09-01', 11);
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Amazon000001',110,1, Date '2021-09-01', 11);
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Amazon000002',110,1, Date '2021-09-01', 11);
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Amazon000003',110,1, Date '2021-09-01', 11);
+
+-- 3-3. Self-reported symptom, the result of COVID-19 test and self-quarantine record data are inserted.
+INSERT INTO Symptom values(symptom_seq.NEXTVAL, 'Addidas000003', Date '2021-09-04',3);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-04',12, 'Addidas000003','positive');
+INSERT INTO Case values(case_seq.NEXTVAL, 'Addidas000003', Date '2021-09-04', 'back');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000003', Date '2021-09-04', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000003', Date '2021-09-05', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000003', Date '2021-09-06', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000003', Date '2021-09-07', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000003', Date '2021-09-08', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000003', Date '2021-09-09', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000003', Date '2021-09-10', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000003', Date '2021-09-11', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000003', Date '2021-09-12', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000003', Date '2021-09-13', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000003', Date '2021-09-14', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000003', Date '2021-09-15', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000003', Date '2021-09-16', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000003', Date '2021-09-17', 'well');
+
+-- 3-4. Send notifications to employees working on the same floor as Addidas000003. (optional covid test)
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Addidas000001', Date '2021-09-04', 'optional');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Addidas000002', Date '2021-09-04', 'optional');
+
+-- 3-5. Send notifications to employees who had a meeting with Addidas00000. within 3 days. (mandatory covid test)
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Addidas000002', Date '2021-09-04', 'mandatory');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Amazon000001', Date '2021-09-04',  'mandatory');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Amazon000002', Date '2021-09-04',  'mandatory');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Amazon000003', Date '2021-09-04',  'mandatory');
+
+-- 3-6. Send notifications to employees who use the floor where the meeting room that Addidas000003 used is located. (optional covid test)
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-04', 'optional');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Bestbuy000002', Date '2021-09-04', 'optional');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Bestbuy000003', Date '2021-09-04',  'optional');
+
+-- 3-7. Covid test results of employees who came in contact with Addidas000003.
+INSERT INTO Test values(test_seq.NEXTVAL, 'clinic', Date '2021-09-05',10, 'Addidas000002','positive');
+INSERT INTO Test values(test_seq.NEXTVAL, 'clinic', Date '2021-09-05',12, 'Amazon000001', 'negative');
+INSERT INTO Test values(test_seq.NEXTVAL, 'hospital', Date '2021-09-05',15, 'Amazon000002', 'negative');
+INSERT INTO Test values(test_seq.NEXTVAL, 'hospital', Date '2021-09-05',14, 'Amazon000003', 'negative');
+
+-- 4. Addidas000002 -> Positive
+-- 4.1 The result of COVID-19 test and self-quarantine record data are inserted.
+INSERT INTO Case values(case_seq.NEXTVAL, 'Addidas000002', Date '2021-09-05', 'back');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000002', Date '2021-09-05', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000002', Date '2021-09-06', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000002', Date '2021-09-07', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000002', Date '2021-09-08', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000002', Date '2021-09-09', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000002', Date '2021-09-10', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000002', Date '2021-09-11', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000002', Date '2021-09-12', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000002', Date '2021-09-13', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000002', Date '2021-09-14', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000002', Date '2021-09-15', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000002', Date '2021-09-16', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000002', Date '2021-09-17', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Addidas000002', Date '2021-09-18', 'well');
+
+-- 4-2. Send notifications to employees working on the same floor as 'Addidas000002'. (optional covid test)
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Addidas000001', Date '2021-09-05', 'optional');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Addidas000003', Date '2021-09-05', 'optional');
+
+-- 4-3. Send notifications to employees who had a meeting with Addidas000002 within 3 days. (mandatory covid test)
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Addidas000003', Date '2021-09-05',  'mandatory');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Amazon000001', Date '2021-09-05',  'mandatory');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Amazon000002', Date '2021-09-05',  'mandatory');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Amazon000003', Date '2021-09-05',  'mandatory');
+
+-- 4-4. Send notifications to employees who use the floor where the meeting room that Addidas000002 used is located. (optional covid test)
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-05', 'optional');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Bestbuy000002', Date '2021-09-05', 'optional');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Bestbuy000003', Date '2021-09-05',  'optional');
+
+-- 4-5. Covid test results of employees who came in contact with Addidas000002.
+INSERT INTO Test values(test_seq.NEXTVAL, 'clinic', Date '2021-09-06',12, 'Amazon000001', 'negative');
+INSERT INTO Test values(test_seq.NEXTVAL, 'hospital', Date '2021-09-06',15, 'Amazon000002', 'negative');
+INSERT INTO Test values(test_seq.NEXTVAL, 'hospital', Date '2021-09-06',14, 'Amazon000003', 'negative');
+
+-- 5-1. Scan -> Negative
+INSERT INTO Scan values(scan_seq.NEXTVAL, Date '2021-09-06', 8, 'Google000001',35.7);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-06',9, 'Google000001','negative');
+INSERT INTO Scan values(scan_seq.NEXTVAL, Date '2021-09-07', 9, 'Netflix000003',36.2);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-07',10, 'Netflix000003','negative');
+INSERT INTO Scan values(scan_seq.NEXTVAL, Date '2021-09-10', 11, 'Bestbuy000002',37.1);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-10',12, 'Bestbuy000002','negative');
+INSERT INTO Scan values(scan_seq.NEXTVAL, Date '2021-09-13', 9, 'Netflix000001',36.2);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-13',10, 'Netflix000001','negative');
+INSERT INTO Scan values(scan_seq.NEXTVAL, Date '2021-09-14', 11, 'Google000002',38);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-14',12, 'Google000002','negative');
+INSERT INTO Scan values(scan_seq.NEXTVAL, Date '2021-09-16', 11, 'Google000001',34.8);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-16',15, 'Google000001','negative');
+
+-- 6-1. Symptom -> Negative (09.06~09.24)
+INSERT INTO Symptom values(symptom_seq.NEXTVAL, 'Google000003', Date '2021-09-06',1);
+INSERT INTO Test values(test_seq.NEXTVAL, 'hospital', Date '2021-09-06',12, 'Google000003','negative');
+INSERT INTO Symptom values(symptom_seq.NEXTVAL, 'Netflix000002', Date '2021-09-07',3);
+INSERT INTO Test values(test_seq.NEXTVAL, 'clinic', Date '2021-09-07',11, 'Netflix000002','negative');
+INSERT INTO Symptom values(symptom_seq.NEXTVAL, 'Bestbuy000003', Date '2021-09-11',5);
+INSERT INTO Test values(test_seq.NEXTVAL, 'hospital', Date '2021-09-11',11, 'Bestbuy000003','negative');
+
+-- 7. Symptom -> Positive
+-- 7-1. Meeting on the 15th floor on September 15
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Netflix000001',410,4, Date '2021-09-15', 15);
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Netflix000002',410,4, Date '2021-09-15', 15);
+
+-- 7-2. Positive 
+INSERT INTO Symptom values(symptom_seq.NEXTVAL, 'Netflix000002', Date '2021-09-16',2);
+INSERT INTO Test values(test_seq.NEXTVAL, 'clinic', Date '2021-09-16',16, 'Netflix000002','positive');
+INSERT INTO Case values(case_seq.NEXTVAL, 'Netflix000002', Date '2021-09-16', 'left');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-09-16', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-09-17', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-09-18', 'well');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-09-19', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-09-20', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-09-21', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-09-22', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-09-23', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-09-24', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-09-25', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-09-26', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002',Date  '2021-09-27', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-09-28', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-09-29', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-09-30', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-10-01', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-10-02', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-10-03', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-10-04', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-10-05', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-10-06', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-10-07', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-10-08', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-10-09', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Netflix000002', Date '2021-10-10', 'hospitalized');
+
+-- 7-3. Send notifications to employees working on the same floor as 'Netflix000002'. (optional covid test)
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Netflix000001', Date '2021-09-16', 'optional');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Netflix000003', Date '2021-09-16', 'optional');
+
+-- 7-4. Send notifications to employees who use the floor where the meeting room thatNetflix000002 used is located. (optional covid test)
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Google000001', Date '2021-09-16', 'optional');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Google000002', Date '2021-09-16', 'optional');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Google000003', Date '2021-09-16', 'optional');
+
+-- 7-5. Send notifications to employees who had a meeting with Netflix000002 within 3 days. (mandatory covid test)
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Netflix000001', Date '2021-09-16', 'mandatory');
+
+-- 7-6. Covid test results of employees who came in contact with Netflix000002.
+INSERT INTO Test values(test_seq.NEXTVAL, 'hospital', Date '2021-09-17',10, 'Netflix000001','negative');
+
+--  8-1. Meeting on the 3st floor on September 27st
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Netflix000001',310,3, Date '2021-09-27', 14);
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Netflix000003',310,3, Date '2021-09-27', 14);
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Amazon000001',310,3, Date '2021-09-27', 14);
+INSERT INTO Meeting values(meeting_seq.NEXTVAL, 'Amazon000002',310,3, Date '2021-09-27', 14);
+
+-- 8-2. Scan -> Positive
+INSERT INTO Scan values(scan_seq.NEXTVAL, Date '2021-09-28', 15, 'Amazon000002',39);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-28',17, 'Amazon000002','positive');
+
+-- 8-3. Amazon2 = Positive
+INSERT INTO Case values(case_seq.NEXTVAL, 'Amazon000002', Date '2021-09-28', 'left'); 
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Amazon000002', Date '2021-09-28', 'sick');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Amazon000002', Date '2021-09-29', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Amazon000002', Date '2021-09-30', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Amazon000002', Date '2021-10-01', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Amazon000002', Date '2021-10-02', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Amazon000002', Date '2021-10-03', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Amazon000002', Date '2021-10-04', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Amazon000002', Date '2021-10-05', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Amazon000002', Date '2021-10-06', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Amazon000002', Date '2021-10-07', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Amazon000002', Date '2021-10-08', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Amazon000002', Date '2021-10-09', 'hospitalized');
+INSERT INTO Health_status values(hs_seq.NEXTVAL, 'Amazon000002', Date '2021-10-10', 'hospitalized');
+
+-- 8-4. Send notifications to employees working on the same floor as Amazon000002. (optional covid test)
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Amazon000001', Date '2021-09-28', 'optional');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Amazon000003', Date '2021-09-28', 'optional');
+
+--8-5. Send notifications to employees who use the floor where the meeting room that Amazon000002 used is located. (optional covid test)
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Netflix000001', Date '2021-09-28', 'optional');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Netflix000003', Date '2021-09-28',  'optional');
+
+-- 8-6. Send notifications to employees who had a meeting with Amazon000002 within 3 days. (mandatory covid test)
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Netflix000001', Date '2021-09-28', 'mandatory');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Netflix000003', Date '2021-09-28', 'mandatory');
+INSERT INTO Notification values (notification_seq.NEXTVAL, 'Amazon000001', Date '2021-09-28', 'mandatory');
+
+-- 8-7. Covid test results of employees who came in contact with Amazon000002.
+INSERT INTO Test values(test_seq.NEXTVAL, 'hospital', Date '2021-09-29',10, 'Netflix000001','negative');
+INSERT INTO Test values(test_seq.NEXTVAL, 'hospital', Date '2021-09-29',11, 'Netflix000003','negative');
+INSERT INTO Test values(test_seq.NEXTVAL, 'clinic', Date '2021-09-29',8, 'Amazon000001','negative');
+
+-- 9. Insert several symptom records
+INSERT INTO Symptom values(symptom_seq.NEXTVAL, 'Netflix000003', Date '2021-09-23',4);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-23',12, 'Netflix000003','negative');
+INSERT INTO Symptom values(symptom_seq.NEXTVAL, 'Google000001', Date '2021-09-24',1);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-24',12, 'Google000001','negative');
+INSERT INTO Symptom values(symptom_seq.NEXTVAL, 'Addidas000003', Date '2021-09-26',1);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-26',12, 'Addidas000003','negative');
+INSERT INTO Symptom values(symptom_seq.NEXTVAL, 'Bestbuy000001', Date '2021-09-27',2);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-27',12, 'Bestbuy000001','negative');
+INSERT INTO Symptom values(symptom_seq.NEXTVAL, 'Bestbuy000002', Date '2021-09-29',4);
+INSERT INTO Test values(test_seq.NEXTVAL, 'company', Date '2021-09-29',12, 'Bestbuy000002','negative');

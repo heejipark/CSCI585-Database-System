@@ -1,0 +1,41 @@
+-- Hee Ji Park
+-- Oracle DB (https://livesql.oracle.com/)
+
+-- Q4. The management would like stats, for a given period (between start, end dates), on the following: 
+-- The period were divided into the first half of September (2021-09-01 ~ 2021-09-15) and the second half of September (2021-09-16 ~ 2021-09-30).
+
+-- Q4-1. number of scans 
+SELECT count(*) as The_number_of_scans_during_the_first_half_of_September
+FROM scan
+WHERE scan_date between DATE '2021-09-01' and DATE '2021-09-15';
+
+SELECT count(*) as The_number_of_scans_during_the_second_half_of_September
+FROM scan
+WHERE scan_date between DATE '2021-09-16' and DATE '2021-09-30';
+
+-- Q4-2. number of tests
+SELECT count(*) as The_number_of_tests_during_the_first_half_of_September
+FROM test
+WHERE test_date between DATE '2021-09-01' and DATE '2021-09-15';
+
+SELECT count(*) as The_number_of_tests_during_the_second_half_of_September
+FROM test
+WHERE test_date between DATE '2021-09-16' and DATE '2021-09-30';
+
+-- Q4-3. number of employees who self-reported symptoms
+SELECT count(*) as The_number_of_employees_who_self_reported_symptoms_during_the_first_half_of_September
+FROM symptom
+WHERE date_reported between DATE '2021-09-01' and DATE '2021-09-15';
+
+SELECT count(*) as The_number_of_employees_who_self_reported_symptoms_during_the_second_half_of_September
+FROM symptom
+WHERE date_reported between DATE '2021-09-16' and DATE '2021-09-30';
+
+-- Q4-4. number of positive cases
+SELECT count(*)  as The_number_of_positive_cases_during_the_first_half_of_September
+FROM test
+WHERE test_date between DATE '2021-09-01' and DATE '2021-09-15' and test_result = 'positive';
+
+SELECT count(*)  as The_number_of_positive_cases_during_the_second_half_of_September
+FROM test
+WHERE test_date between DATE '2021-09-16' and DATE '2021-09-30' and test_result = 'positive';
