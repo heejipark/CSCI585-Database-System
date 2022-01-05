@@ -1,4 +1,4 @@
-# CSCI585-Database-System
+# CSCI585-Database-System @USC
 
 Grade: A
 
